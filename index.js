@@ -25,7 +25,7 @@ const client = new MongoClient(uri, {
 });
 
 const JWKS = createRemoteJWKSet(
-  new URL("http://localhost:3000/api/auth/jwks")
+  new URL(`${process.env.CLIENT_URL}/api/auth/jwks`)
 )
 
 const varyfitoken = async(req, res, next) => {
@@ -44,7 +44,8 @@ const varyfitoken = async(req, res, next) => {
     const { payload } = await jwtVerify(token, JWKS)
     console.log(payload)
     next()
-  }catch{
+  }catch(error){
+    console.log(error)
     return res.status(403).json({ message: "Forbidden" })
   }
 
@@ -58,18 +59,24 @@ const varyfitoken = async(req, res, next) => {
 async function run() {
   try {
 
-    await client.connect();
+    // await client.connect();
 
     const db = client.db("Docappoinment")
     const doctorcollection = db.collection("Doctors")
     const bookingcollection = db.collection("Bookingsystem")
 
-    app.get('/appoinment', async (req, res) => {
-      const result = await doctorcollection.find().toArray()
+
+    app.get('/feauterd', async (req, res) => {
+      const result = await doctorcollection.find().sort({rating: -1}).limit(3).toArray()
       res.json(result)
     })
 
-    app.post('/appoinment', varyfitoken, async (req, res) => {
+    app.get('/appoinment', async (req, res) => {
+      const result = await doctorcollection.find().sort({rating: -1}).toArray()
+      res.json(result)
+    })
+
+    app.post('/appoinment', async (req, res) => {
       const appoinmentdata = req.body
       console.log(appoinmentdata)
       const result = await doctorcollection.insertOne(appoinmentdata)
@@ -146,7 +153,7 @@ async function run() {
 
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
