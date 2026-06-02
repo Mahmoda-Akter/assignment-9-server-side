@@ -113,14 +113,14 @@ async function run() {
 
     // Bookingsystem database 
 
-    app.get('/booking/:userid', async (req, res) => {
+    app.get('/booking/:userid', varyfitoken, async (req, res) => {
       const { userid } = req.params
 
       const result = await bookingcollection.find({ userid: userid }).toArray()
       res.json(result)
     })
 
-    app.post('/booking', async (req, res) => {
+    app.post('/booking', varyfitoken,  async (req, res) => {
       const bookingdata = req.body
       // console.log(appoinmentdata)
       const result = await bookingcollection.insertOne(bookingdata)
@@ -128,7 +128,7 @@ async function run() {
       res.json(result)
     })
 
-    app.patch('/booking/:id', async (req, res) => {
+    app.patch('/booking/:id', varyfitoken, async (req, res) => {
       const { id } = req.params
       const updatedata = req.body
 
@@ -139,7 +139,7 @@ async function run() {
       res.json(result)
     })
 
-    app.delete('/booking/:bookingid', async (req, res) => {
+    app.delete('/booking/:bookingid', varyfitoken, async (req, res) => {
       const { bookingid } = req.params
 
       const result = await bookingcollection.deleteOne({ _id: new ObjectId(bookingid) })
