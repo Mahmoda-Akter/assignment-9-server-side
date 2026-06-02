@@ -51,8 +51,6 @@ const varyfitoken = async(req, res, next) => {
 
  
 
-      
-  
 }
 
 
